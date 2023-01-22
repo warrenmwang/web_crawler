@@ -1,0 +1,28 @@
+{
+  "name": "web_crawler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest",
+    "start": "node main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Warren-Wang-OG/web_crawler.git"
+  },
+  "keywords": [
+    "javascript",
+    "web",
+    "crawler"
+  ],
+  "author": "Warren Wang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Warren-Wang-OG/web_crawler/issues"
+  },
+  "homepage": "https://github.com/Warren-Wang-OG/web_crawler#readme",
+  "devDependencies": {
+    "jest": "^29.3.1"
+  }
+}
