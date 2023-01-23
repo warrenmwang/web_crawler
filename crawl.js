@@ -1,3 +1,6 @@
+/*
+* normalizes a url
+*/
 function normalizeURL(url) {
     try{
         const newURL = new URL(url)
@@ -13,6 +16,14 @@ function normalizeURL(url) {
     }
 }
 
+/*
+* returns a list of un-normalized urls found in the htmlbody
+* baseURL is used in case we stumble upon relative URLs to other pages on the same website, so we can construct
+* the absolute URL
+*/
+function getURLsFromHTML(htmlBody, baseURL){
+
+}
 
 module.exports = {
     normalizeURL

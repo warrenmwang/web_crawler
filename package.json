@@ -24,5 +24,8 @@
   "homepage": "https://github.com/Warren-Wang-OG/web_crawler#readme",
   "devDependencies": {
     "jest": "^29.3.1"
+  },
+  "dependencies": {
+    "jsdom": "^21.1.0"
   }
 }
