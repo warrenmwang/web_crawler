@@ -38,5 +38,12 @@ for(let ans of Object.keys(urlsNormalizeTest)){
 let urlsPullURLsFromHTMLTest = [
     // answer, testvals (htmlBody, baseURL)
     [["www.example.com/profile", "www.example.com/blog", "www.example.com/path"], ["<body>  <a href=\"/profile\">profile page</a> <a href=\"/blog\">blog page</a>    <a href=\"/path\">test path</a></body>", "www.example.com"]],
-    [["https://google.com/search", "https://wikipedia.com", "https://apple.com", "https://intel.tech"], ["<body> <a href=\"https://google.com/search\">search google</a> <a href=\"https://wikipedia.com\">search wikipedia</a> <a href=\"https://apple.com\">apple products</a> <a href=\"https://intel.tech\">intel electronics</a> </body>", "www.somerandomblog.com"]]
+    [["https://google.com/search", "https://wikipedia.com/", "https://apple.com/", "https://intel.tech/"], ["<body> <a href=\"https://google.com/search\">search google</a> <a href=\"https://wikipedia.com\">search wikipedia</a> <a href=\"https://apple.com\">apple products</a> <a href=\"https://intel.tech\">intel electronics</a> </body>", "www.somerandomblog.com"]]
 ]
+
+for(let x of urlsPullURLsFromHTMLTest){
+    const answerList = x[0]
+    const toSubmitList = x[1]
+
+    test(`blah`, () => {expect(getURLsFromHTML(toSubmitList[0], toSubmitList[1])).toStrictEqual(answerList)})
+}

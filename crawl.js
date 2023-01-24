@@ -1,3 +1,5 @@
+const { JSDOM } = require("jsdom")
+
 /*
 * normalizes a url
 */
@@ -22,9 +24,34 @@ function normalizeURL(url) {
 * the absolute URL
 */
 function getURLsFromHTML(htmlBody, baseURL){
+    const dom = new JSDOM(htmlBody)
+    const aTags = dom.window.document.querySelectorAll('a')
 
+    // parse thru the a tags and construct the urls...
+    let urls = []
+    for(let aTag of aTags){
+        urls.push(aTag.href)
+    }
+
+    // if urls are relative, construct the absolute url using baseURL
+    let absoluteURLs = []
+    for(let url of urls){
+        try{
+            // succeeds only if url is absolute
+            const newURL = new URL(url)
+            absoluteURLs.push(url)
+        }catch(err){
+            // if we get here, the url is relative, assuming no trailling slash at the end of baseURL
+            const newURL = baseURL + url
+            absoluteURLs.push(newURL)
+        }
+    }
+
+    return absoluteURLs
 }
 
 module.exports = {
-    normalizeURL
+    normalizeURL,
+    getURLsFromHTML
 }
+
