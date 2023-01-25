@@ -58,16 +58,16 @@ function getURLsFromHTML(htmlBody, baseURL){
 /*
 * crawls a page and returns the html body
 * recursively traverses all the links that are apart of the base_url website 
-* base_url - String
-* curr_url - String
+* baseURL - String
+* currURL - String
 * pages - object to keep track of pages we've already crawled
 * other params optional
 * returns html body - String
 */
-async function crawlPage(base_url, curr_url, pages){
+async function crawlPage(baseURL, currURL, pages){
     // use base_url if curr_url is empty (starting point) (confirmed to be working)
-    if (curr_url === undefined){
-        curr_url = base_url
+    if (currURL === undefined){
+        currURL = baseURL
     }
 
     // initial pages if undefined (confirmed to be working)
@@ -76,13 +76,13 @@ async function crawlPage(base_url, curr_url, pages){
     }
 
     // return pages if current_url is not apart of base_url
-    if(!curr_url.includes(base_url)){
+    if(!currURL.includes(baseURL)){
         return pages
     }
     
     
     // add to pages the current url if not existing, else increment counter
-    const normalizedCurrURL = normalizeURL(curr_url)
+    const normalizedCurrURL = normalizeURL(currURL)
     if (pages.has(normalizedCurrURL)){
         pages.set(normalizedCurrURL, pages.get(normalizedCurrURL) + 1)
         return pages
@@ -92,9 +92,9 @@ async function crawlPage(base_url, curr_url, pages){
     pages.set(normalizedCurrURL, 1)
 
     // making a request 
-    console.log(`Requesting ${curr_url}`)
+    console.log(`Requesting ${currURL}`)
 
-    const response = await fetch(curr_url)
+    const response = await fetch(currURL)
 
     // quit if we get a 404
     if (response.status === 404){
@@ -104,15 +104,15 @@ async function crawlPage(base_url, curr_url, pages){
 
     // if we get a non-html response, quit
     if (!response.headers.get("content-type").includes("text/html")){
-        console.error(`got non-html content for url: ${curr_url}`)
+        console.error(`got non-html content for url: ${currURL}`)
         return pages
     }
 
     // get all urls from htmlbody, recursively traverse them
     const htmlBody = await response.text()
-    const allURLsFromHTML = getURLsFromHTML(htmlBody, base_url)
+    const allURLsFromHTML = getURLsFromHTML(htmlBody, baseURL)
     for(let new_url of allURLsFromHTML){
-        pages = await crawlPage(base_url, new_url, pages)
+        pages = await crawlPage(baseURL, new_url, pages)
     }
     
     return pages
