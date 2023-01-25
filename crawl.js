@@ -2,6 +2,8 @@ const { JSDOM } = require("jsdom")
 
 /*
 * normalizes a url
+* url - String
+* returns a normalized url - String
 */
 function normalizeURL(url) {
     try{
@@ -22,6 +24,9 @@ function normalizeURL(url) {
 * returns a list of un-normalized urls found in the htmlbody
 * baseURL is used in case we stumble upon relative URLs to other pages on the same website, so we can construct
 * the absolute URL
+* htmlBody - String
+* baseURL - String
+* returns a list of urls - Array of Strings
 */
 function getURLsFromHTML(htmlBody, baseURL){
     const dom = new JSDOM(htmlBody)
@@ -50,8 +55,70 @@ function getURLsFromHTML(htmlBody, baseURL){
     return absoluteURLs
 }
 
+/*
+* crawls a page and returns the html body
+* recursively traverses all the links that are apart of the base_url website 
+* base_url - String
+* curr_url - String
+* pages - object to keep track of pages we've already crawled
+* other params optional
+* returns html body - String
+*/
+async function crawlPage(base_url, curr_url, pages){
+    // use base_url if curr_url is empty (starting point) (confirmed to be working)
+    if (curr_url === undefined){
+        curr_url = base_url
+    }
+
+    // initial pages if undefined (confirmed to be working)
+    if (pages === undefined){
+        pages = new Map()
+    }
+
+    // return pages if current_url is not apart of base_url
+    if(!curr_url.includes(base_url)){
+        return pages
+    }
+    
+    const normalizedCurrURL = normalizeURL(curr_url)
+    // add to pages the current url if not existing, else increment counter
+
+    if (pages.has(normalizedCurrURL)){
+        pages.set(normalizedCurrURL, pages.get(normalizedCurrURL) + 1)
+        return pages
+    }
+
+    // if we get here, this curr_url is a new url that has not been traversed yet
+    pages.set(normalizedCurrURL, 1)
+
+    // making a request 
+    console.log(`Requesting ${curr_url}`)
+
+    const response = await fetch(curr_url)
+
+    // quit if we get a 404
+    if (response.status === 404){
+        console.error("got 404, page not found")
+        return pages
+    }
+
+    // if we get a non-html response, quit
+    if (!response.headers.get("content-type").includes("text/html")){
+        console.error(`got non-html content for url: ${curr_url}`)
+        return pages
+    }
+
+    // get all urls from htmlbody, recursively traverse them
+    const htmlBody = await response.text()
+    const allURLsFromHTML = getURLsFromHTML(htmlBody, base_url)
+    for(let new_url of allURLsFromHTML){
+        pages = await crawlPage(base_url, new_url, pages)
+    }
+    
+    return pages
+}
+
 module.exports = {
-    normalizeURL,
-    getURLsFromHTML
+    normalizeURL,getURLsFromHTML,crawlPage
 }
 
