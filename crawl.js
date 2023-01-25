@@ -80,9 +80,9 @@ async function crawlPage(base_url, curr_url, pages){
         return pages
     }
     
-    const normalizedCurrURL = normalizeURL(curr_url)
+    
     // add to pages the current url if not existing, else increment counter
-
+    const normalizedCurrURL = normalizeURL(curr_url)
     if (pages.has(normalizedCurrURL)){
         pages.set(normalizedCurrURL, pages.get(normalizedCurrURL) + 1)
         return pages

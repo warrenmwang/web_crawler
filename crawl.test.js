@@ -45,5 +45,5 @@ for(let x of urlsPullURLsFromHTMLTest){
     const answerList = x[0]
     const toSubmitList = x[1]
 
-    test(`blah`, () => {expect(getURLsFromHTML(toSubmitList[0], toSubmitList[1])).toStrictEqual(answerList)})
+    test(`testing getURLsFromHTML`, () => {expect(getURLsFromHTML(toSubmitList[0], toSubmitList[1])).toStrictEqual(answerList)})
 }
