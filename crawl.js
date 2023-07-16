@@ -1,11 +1,13 @@
 const { JSDOM } = require("jsdom")
+const fs = require('fs');
+const path = require('path');
 
+function normalizeURL(url) {
 /*
 * normalizes a url
 * url - String
 * returns a normalized url - String
 */
-function normalizeURL(url) {
     try{
         const newURL = new URL(url)
         // return just the hostname and path, no trailing forward slash
@@ -20,6 +22,7 @@ function normalizeURL(url) {
     }
 }
 
+function getURLsFromHTML(htmlBody, baseURL){
 /*
 * returns a list of un-normalized urls found in the htmlbody
 * baseURL is used in case we stumble upon relative URLs to other pages on the same website, so we can construct
@@ -28,7 +31,6 @@ function normalizeURL(url) {
 * baseURL - String
 * returns a list of urls - Array of Strings
 */
-function getURLsFromHTML(htmlBody, baseURL){
     const dom = new JSDOM(htmlBody)
     const aTags = dom.window.document.querySelectorAll('a')
 
@@ -55,6 +57,7 @@ function getURLsFromHTML(htmlBody, baseURL){
     return absoluteURLs
 }
 
+async function crawlPage(baseURL, currURL, pages, saveHTML = false){
 /*
 * crawls a page and returns the html body
 * recursively traverses all the links that are apart of the base_url website 
@@ -64,7 +67,6 @@ function getURLsFromHTML(htmlBody, baseURL){
 * other params optional
 * returns html body - String
 */
-async function crawlPage(baseURL, currURL, pages){
     // use base_url if curr_url is empty (starting point) (confirmed to be working)
     if (currURL === undefined){
         currURL = baseURL
@@ -110,11 +112,24 @@ async function crawlPage(baseURL, currURL, pages){
 
     // get all urls from htmlbody, recursively traverse them
     const htmlBody = await response.text()
+
+    // save the page content to disk if saveHTML is true
+    if (saveHTML) {
+        let filePath = path.join('savedWebsiteRoot', new URL(currURL).pathname)
+        console.log(`filePath = ${filePath}`)
+        if (filePath.endsWith('/')) {
+            filePath += 'index.html';
+        }
+        fs.mkdirSync(path.dirname(filePath), { recursive: true })
+        fs.writeFileSync(filePath, htmlBody)
+    }
+
+    // recurse
     const allURLsFromHTML = getURLsFromHTML(htmlBody, baseURL)
     for(let new_url of allURLsFromHTML){
-        pages = await crawlPage(baseURL, new_url, pages)
+        pages = await crawlPage(baseURL, new_url, pages, saveHTML)
     }
-    
+
     return pages
 }
 
